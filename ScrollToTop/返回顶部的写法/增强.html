@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>回到顶部-增强</title>
+  <style>
+  body {
+    height: 2000px;
+  }
+  .box{
+      position:fixed;
+      right:10px;
+      bottom: 10px;
+      height:30px;
+      width: 50px;    
+      text-align:center;
+      padding-top:20px;    
+      background-color: lightblue;
+      border-radius: 20%;
+      overflow: hidden;
+  }
+  .box:hover:before{
+      top:50%
+  }
+  .box:hover .box-in{
+      visibility: hidden;
+  }
+  .box:before{
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      content:'回到顶部';
+      width: 40px;
+      color:peru;
+      font-weight:bold;
+
+  }    
+  .box-in{
+      visibility: visible;
+      display:inline-block;
+      height:20px;
+      width: 20px;
+      border: 3px solid black;
+      border-color: white transparent transparent white;
+      transform:rotate(45deg);
+  }
+  </style>
+</head>
+<body>
+  <div id="box" class="box">
+    <div class="box-in"></div>
+  </div>
+</body>
+<script>
+// 　动画有两种：一种是CSS动画，需要有样式变化配合transition；一种是javascript动画，使用定时器来实现　
+// 之前的实现中 scrollTop、scrollTo()和scrollBy()方法可以增加动画，且由于无样式变化，只能增加javascript动画
+// 定时器又有setInterval、setTimeout和requestAnimationFrame这三种可以使用，下面使用性能最好的定时器requestAnimationFrame来实现
+
+
+// 　使用定时器，将scrollTop的值每次减少50，直到减少到0，则动画完毕
+// var timer = null
+// box.onclick = function() {
+//   cancelAnimationFrame(timer)
+//   timer = requestAnimationFrame(function fn() {
+//     var oTop = document.body.scrollTop || document.documentElement.scrollTop
+//     if (oTop > 0) {
+//       document.body.scrollTop = document.documentElement.scrollTop = oTop - 50
+//       timer = requestAnimationFrame(fn)
+//     } else {
+//       cancelAnimationFrame(timer)
+//     }
+//   })
+// }
+
+// 时间版运动, 回到顶部的动画效果共运动500ms (上面的代码有一个问题，就是当页面内容较多时，回到顶部的动画效果将持续很长时间)
+var timer = null
+box.onclick = function() {
+  cancelAnimationFrame(timer)
+  // 获取当前毫秒数
+  var startTime = +new Date()
+  // 获取当前页面的滚动高度
+  var b = document.body.scrollTop || document.documentElement.scrollTop
+  var d = 500  // 500ms
+  var c = b
+  timer = requestAnimationFrame(function func() {
+    var t = d - Math.max(0, startTime - (+new Date()) + d)
+    // console.log("t  "+ t)
+    document.documentElement.scrollTop = document.body.scrollTop = t * (-c) / d + b
+    // console.log("scrollTop  "+(t * (-c) / d + b) )
+    timer = requestAnimationFrame(func)
+
+    if (t == d) {
+      cancelAnimationFrame(timer)
+    }
+  })
+}
+
+</script>
+</html>
